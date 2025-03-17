@@ -85,7 +85,10 @@ export const calcularResumoFinanceiro = (
   corridas: Corrida[],
   config: VeiculoConfig | null
 ): ResumoFinanceiro => {
+  // Cálculo do ganho bruto
   const ganhoBruto = corridas.reduce((total, corrida) => total + corrida.ganhoBruto, 0);
+  
+  // Cálculo do gasto com gasolina
   const gastoGasolina = corridas.reduce((total, corrida) => total + corrida.gastoGasolina, 0);
   
   // Cálculo de gastos de manutenção e IPVA proporcional ao período
