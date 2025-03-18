@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { Corrida, VeiculoConfig, Periodo } from '../types';
 import { carregarDados, filtrarCorridasPorPeriodo, formatarDinheiro } from '../lib/utils';
 import { FaCarSide, FaRoute, FaMoneyBillWave, FaGasPump, FaList } from 'react-icons/fa';
+import { verificarLogin } from '../lib/authUtils';
 
 const RelatoriosPage = () => {
   const [corridas, setCorridas] = useState<Corrida[]>([]);
   const [configVeiculo, setConfigVeiculo] = useState<VeiculoConfig | null>(null);
   const [periodoAtual, setPeriodoAtual] = useState<Periodo>('mensal');
   const [carregando, setCarregando] = useState(true);
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const [resumos, setResumos] = useState<{
     [key in Periodo]: {
       totalCorridas: number;
@@ -37,9 +39,22 @@ const RelatoriosPage = () => {
     try {
       setCarregando(true);
       
-      // Carregar corridas do localStorage
-      const corridasCarregadas = carregarDados<Corrida[]>('corridas', []);
+      // Verificar se o usuário está logado
+      const { logado, sessao } = verificarLogin();
+      let chaveCorretas = 'corridas';
+      
+      if (logado && sessao) {
+        setUsuarioId(sessao.id);
+        chaveCorretas = `corridas_${sessao.id}`;
+        console.log(`Usuário logado: ${sessao.nome} (${sessao.id}). Usando chave: ${chaveCorretas}`);
+      } else {
+        console.log('Usuário não logado. Usando chave padrão: corridas');
+      }
+      
+      // Carregar corridas do localStorage usando a chave correta
+      const corridasCarregadas = carregarDados<Corrida[]>(chaveCorretas, []);
       setCorridas(corridasCarregadas);
+      console.log(`Carregadas ${corridasCarregadas.length} corridas de ${chaveCorretas}`);
       
       // Carregar configurações do veículo
       const configCarregada = carregarDados<VeiculoConfig | null>('veiculoConfig', null);
@@ -185,28 +200,28 @@ const RelatoriosPage = () => {
                     resumos[periodoAtual].totalCorridas.toString(),
                     <FaList size={24} />,
                     'Número total de corridas realizadas',
-                    'bg-primary-50'
+                    'bg-gray-50'
                   )}
                   {renderizarCardIndicador(
                     'Quilômetros Rodados',
                     `${resumos[periodoAtual].totalKm.toFixed(1)} km`,
                     <FaRoute size={24} />,
                     'Distância total percorrida',
-                    'bg-success-50'
+                    'bg-blue-50'
                   )}
                   {renderizarCardIndicador(
                     'Ganho Bruto',
                     formatarDinheiro(resumos[periodoAtual].totalGanhos),
                     <FaMoneyBillWave size={24} />,
                     'Valor total ganho no período',
-                    'bg-warning-50'
+                    'bg-green-50'
                   )}
                   {renderizarCardIndicador(
                     'Gasto com Gasolina',
                     formatarDinheiro(resumos[periodoAtual].totalGastoGasolina),
                     <FaGasPump size={24} />,
                     'Valor total gasto com combustível',
-                    'bg-danger-50'
+                    'bg-red-50'
                   )}
                 </div>
               </div>
@@ -217,28 +232,28 @@ const RelatoriosPage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Ganho Médio</h3>
-                      <p className="text-2xl font-bold text-success-700">
+                      <p className="text-2xl font-bold text-green-700">
                         {formatarDinheiro(resumos[periodoAtual].mediaGanhosPorCorrida)}
                       </p>
                       <p className="text-sm text-gray-700">Por corrida</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Distância Média</h3>
-                      <p className="text-2xl font-bold text-primary-700">
+                      <p className="text-2xl font-bold text-blue-700">
                         {resumos[periodoAtual].mediaKmPorCorrida.toFixed(1)} km
                       </p>
                       <p className="text-sm text-gray-700">Por corrida</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Gasto Médio</h3>
-                      <p className="text-2xl font-bold text-danger-700">
+                      <p className="text-2xl font-bold text-red-700">
                         {formatarDinheiro(resumos[periodoAtual].mediaGastoGasolinaPorCorrida)}
                       </p>
                       <p className="text-sm text-gray-700">Gasolina por corrida</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Ganho por Hora</h3>
-                      <p className="text-2xl font-bold text-warning-700">
+                      <p className="text-2xl font-bold text-yellow-700">
                         {formatarDinheiro(resumos[periodoAtual].mediaGanhosHora)}
                       </p>
                       <p className="text-sm text-gray-700">Por hora trabalhada</p>
