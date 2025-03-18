@@ -103,9 +103,9 @@ const BackupPage = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const dataFormatada = new Date().toISOString().split('T')[0];
-      const nomeArquivo = usuarioEmail 
-        ? `ubertracker_backup_${usuarioEmail.split('@')[0]}_${dataFormatada}.json`
-        : `ubertracker_backup_${dataFormatada}.json`;
+      const nomeArquivo = usuarioEmail
+        ? `bruber_backup_${usuarioEmail.split('@')[0]}_${dataFormatada}.json`
+        : `bruber_backup_${dataFormatada}.json`;
         
       a.href = url;
       a.download = nomeArquivo;

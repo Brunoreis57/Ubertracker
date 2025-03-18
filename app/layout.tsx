@@ -6,8 +6,8 @@ import Navbar from "./components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "UberTracker - Controle de Ganhos para Motoristas",
-  description: "Aplicativo para controle de ganhos e despesas de motoristas de aplicativo",
+  title: "BR UBER - Controle de Ganhos para Motoristas",
+  description: "Aplicação para controle de ganhos e gastos para motoristas de aplicativos",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 

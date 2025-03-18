@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaCog, FaPlus, FaTable, FaBars, FaTimes, FaChartLine, FaDatabase, FaLifeRing, FaUser } from 'react-icons/fa';
+import { FaHome, FaCog, FaPlus, FaTable, FaBars, FaTimes, FaChartLine, FaDatabase, FaLifeRing, FaUser, FaTaxi } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import AuthStatus from './AuthStatus';
 import { verificarLogin } from '../lib/authUtils';
@@ -98,7 +98,7 @@ const Navbar = ({ children }: NavbarProps) => {
   if (!isMounted) {
     return (
       <header className="h-16 bg-gray-900 text-white shadow-md sticky top-0 z-40 flex items-center justify-between px-4">
-        <div className="text-xl font-bold">UberTracker</div>
+        <div className="text-xl font-bold">BR UBER</div>
       </header>
     );
   }
@@ -115,7 +115,8 @@ const Navbar = ({ children }: NavbarProps) => {
           >
             {isSidebarOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
-          <div className="text-xl font-bold">UberTracker</div>
+          <FaTaxi size={24} className="text-white" />
+          <div className="text-xl font-bold">BR UBER</div>
         </div>
         <AuthStatus />
       </header>
@@ -167,7 +168,7 @@ const Navbar = ({ children }: NavbarProps) => {
               </ul>
             </nav>
             <div className="p-4 border-t border-gray-700 text-xs text-gray-300">
-              <p>© 2023 UberTracker</p>
+              <p>© 2023 BR UBER</p>
               <p>Versão 1.0</p>
             </div>
           </div>

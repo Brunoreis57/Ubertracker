@@ -1,73 +1,66 @@
-# UberTracker - Controle de Ganhos para Motoristas
+# BR UBER - Controle de Ganhos para Motoristas
 
-UberTracker é uma aplicação web desenvolvida para ajudar motoristas de aplicativos como Uber a acompanharem seus ganhos, gastos e desempenho. Com uma interface intuitiva e funcional, o sistema permite o registro de corridas diárias, configuração de informações do veículo e análise de resultados financeiros em diferentes períodos.
+BR UBER é uma aplicação web desenvolvida para ajudar motoristas de aplicativos como Uber a acompanharem seus ganhos, gastos e desempenho. Com uma interface intuitiva e funcional, o sistema permite registrar corridas diárias, acompanhar métricas de desempenho e visualizar relatórios financeiros.
 
-## Funcionalidades
+## Principais Funcionalidades
 
-- **Dashboard Completo**: Visualize seus ganhos brutos, líquidos e gastos com gasolina em diferentes períodos (diário, semanal, mensal, anual).
-- **Gráficos Interativos**: Acompanhe a evolução dos seus ganhos e a distribuição dos seus gastos através de gráficos.
-- **Registro de Corridas**: Adicione informações detalhadas sobre suas corridas diárias, como horas trabalhadas, quilômetros rodados, gastos com gasolina e ganhos.
-- **Configurações do Veículo**: Cadastre informações sobre seu veículo, como modelo, ano, consumo médio, valor do IPVA e gastos com manutenção.
-- **Histórico de Corridas**: Visualize, edite e exclua registros de corridas anteriores.
-- **Filtros por Data**: Filtre suas corridas por período específico.
-- **Armazenamento Local**: Seus dados são salvos localmente no seu navegador, garantindo privacidade.
+- Registro de corridas diárias com informações detalhadas
+- Cálculo automático de gastos com combustível
+- Relatórios de desempenho por período (diário, semanal, mensal, anual)
+- Gráficos comparativos de ganhos e despesas
+- Backup e restauração de dados
+- Perfil personalizado do motorista
+- Configurações do veículo (consumo, manutenção, IPVA)
+- Sistema de autenticação e proteção de dados
+- Responsivo para acesso em qualquer dispositivo
 
 ## Tecnologias Utilizadas
 
-- **Next.js**: Framework React para renderização do lado do servidor e geração de sites estáticos.
-- **TypeScript**: Superset JavaScript que adiciona tipagem estática.
-- **Tailwind CSS**: Framework CSS utilitário para design responsivo.
-- **Chart.js**: Biblioteca para criação de gráficos interativos.
-- **React Hook Form**: Biblioteca para gerenciamento de formulários.
-- **date-fns**: Biblioteca para manipulação de datas.
-- **LocalStorage API**: Para armazenamento de dados no navegador.
+- **Next.js 15**: Framework React para renderização híbrida
+- **React 18**: Biblioteca para construção de interfaces
+- **Tailwind CSS**: Framework CSS para design responsivo
+- **TypeScript**: Tipagem estática para melhor qualidade de código
+- **Local Storage API**: Armazenamento de dados no navegador
+- **React Hook Form**: Gerenciamento de formulários
+- **Date-fns**: Manipulação de datas
+- **React Icons**: Pacote de ícones
+- **Chart.js**: Biblioteca para criação de gráficos
 
-## Como Usar
+## Requisitos do Sistema
 
-1. **Página Inicial (Dashboard)**:
-   - Visualize os cards com informações financeiras
-   - Alterne entre diferentes períodos (diário, semanal, mensal, anual)
-   - Analise os gráficos de evolução de ganhos e distribuição de gastos
+- Node.js 18.0 ou superior
+- NPM 9.0 ou superior
 
-2. **Configurações**:
-   - Cadastre as informações do seu veículo
-   - Defina valores como consumo médio, IPVA e gastos com manutenção
+## Instalação e Configuração
 
-3. **Adicionar Corrida**:
-   - Registre suas corridas diárias
-   - Informe data, horas trabalhadas, quilômetros rodados, etc.
-
-4. **Corridas Diárias**:
-   - Visualize todas as corridas registradas
-   - Filtre por período específico
-   - Edite ou exclua registros existentes
-
-## Instalação e Execução
-
+1. Clone o repositório do projeto:
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/ubertracker.git
+git clone https://github.com/seu-usuario/bruber.git
+```
 
-# Entre no diretório do projeto
-cd ubertracker
+2. Acesse a pasta do projeto:
+```bash
+cd bruber
+```
 
-# Instale as dependências
+3. Instale as dependências:
+```bash
 npm install
+```
 
-# Execute o servidor de desenvolvimento
+4. Inicie o servidor de desenvolvimento:
+```bash
 npm run dev
 ```
 
-Acesse `http://localhost:3000` no seu navegador para utilizar a aplicação.
+5. Acesse a aplicação no navegador:
+```
+http://localhost:3000
+```
 
-## Próximas Melhorias
+## Deployment
 
-- Autenticação de usuários
-- Sincronização com a nuvem
-- Exportação de relatórios em PDF e Excel
-- Notificações e lembretes
-- Modo offline
-- Aplicativo móvel
+A aplicação pode ser facilmente implantada na Vercel, Netlify ou qualquer outro serviço de hospedagem compatível com Next.js.
 
 ## Licença
 
