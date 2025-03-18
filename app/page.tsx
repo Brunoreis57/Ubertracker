@@ -4,15 +4,17 @@ import { useState, useEffect } from 'react';
 import { FaMoneyBillWave, FaGasPump, FaWallet, FaCalendarAlt, FaCog } from 'react-icons/fa';
 import Card from './components/Card';
 import Grafico from './components/Grafico';
-import { Corrida, DadosGrafico, Periodo, ResumoFinanceiro, VeiculoConfig } from './types';
-import { calcularResumoFinanceiro, filtrarCorridasPorPeriodo, formatarDinheiro } from './lib/utils';
+import { Corrida, DadosGrafico, Periodo, ResumoFinanceiro, VeiculoConfig } from './types/index';
+import { calcularResumoFinanceiro, filtrarCorridasPorPeriodo, formatarDinheiro, carregarDados } from './lib/utils';
 import Link from 'next/link';
 import LembreteBackup from './components/LembreteBackup';
+import { verificarLogin } from './lib/authUtils';
 
 export default function Home() {
   const [periodo, setPeriodo] = useState<Periodo>('mensal');
   const [corridas, setCorridas] = useState<Corrida[]>([]);
   const [configVeiculo, setConfigVeiculo] = useState<VeiculoConfig | null>(null);
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
   const [resumo, setResumo] = useState<ResumoFinanceiro>({
     ganhoBruto: 0,
     ganhoLiquido: 0,
@@ -24,16 +26,27 @@ export default function Home() {
 
   useEffect(() => {
     // Carregar dados do localStorage
-    carregarDados();
+    carregarDadosUsuario();
   }, []);
 
-  const carregarDados = () => {
+  const carregarDadosUsuario = () => {
     try {
-      // Carregar corridas
-      const corridasSalvas = localStorage.getItem('corridas');
-      if (corridasSalvas) {
-        setCorridas(JSON.parse(corridasSalvas));
+      // Verificar se há um usuário logado
+      const { logado, sessao } = verificarLogin();
+      let chaveCorretas = 'corridas';
+      
+      if (logado && sessao) {
+        setUsuarioId(sessao.id);
+        chaveCorretas = `corridas_${sessao.id}`;
+        console.log(`Usuário logado: ${sessao.nome} (${sessao.id}). Usando chave: ${chaveCorretas}`);
+      } else {
+        console.log('Usuário não logado. Usando chave padrão: corridas');
       }
+      
+      // Carregar corridas usando a função utilitária
+      const corridasSalvas = carregarDados<Corrida[]>(chaveCorretas, []);
+      setCorridas(corridasSalvas);
+      console.log(`Carregadas ${corridasSalvas.length} corridas de ${chaveCorretas}`);
       
       // Carregar configurações do veículo
       const configSalva = localStorage.getItem('veiculoConfig');
