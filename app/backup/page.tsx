@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Corrida, VeiculoConfig } from '../types';
-import { carregarDados as carregarDadosUtil, salvarDados as salvarDadosUtil } from '../lib/utils';
+import { carregarDados as carregarDadosUtil, salvarDados as salvarDadosUtil, formatarData } from '../lib/utils';
 import { FaDownload, FaUpload, FaCheck, FaExclamationTriangle, FaLifeRing } from 'react-icons/fa';
 import Link from 'next/link';
 import { verificarLogin } from '../lib/authUtils';
