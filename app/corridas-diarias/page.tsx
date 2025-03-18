@@ -37,9 +37,33 @@ const CorridasDiarias = () => {
       const corridasCarregadas = carregarDados<Corrida[]>(chaveCorretas, []);
       console.log(`Corridas carregadas (${chaveCorretas}):`, corridasCarregadas.length);
       
+      // Debug: mostrar informações detalhadas sobre as corridas carregadas
+      if (corridasCarregadas.length > 0) {
+        console.log('Últimas 3 corridas carregadas:');
+        const ultimasCorridas = corridasCarregadas.slice(-3);
+        ultimasCorridas.forEach((corrida, index) => {
+          console.log(`Corrida ${index + 1}:`, {
+            id: corrida.id,
+            data: corrida.data,
+            dataFormatada: typeof corrida.data === 'string' ? new Date(corrida.data).toLocaleDateString('pt-BR') : 'Data inválida',
+            horasTrabalhadas: corrida.horasTrabalhadas,
+            kmRodados: corrida.kmRodados,
+            ganhoBruto: corrida.ganhoBruto
+          });
+        });
+      }
+      
       // Validar dados carregados
       if (Array.isArray(corridasCarregadas)) {
-        setCorridas(corridasCarregadas);
+        // Ordenar corridas por data (mais recente primeiro)
+        const corridasOrdenadas = [...corridasCarregadas].sort((a, b) => {
+          const dataA = new Date(a.data);
+          const dataB = new Date(b.data);
+          return dataB.getTime() - dataA.getTime();
+        });
+        
+        console.log('Corridas ordenadas por data (mais recente primeiro)');
+        setCorridas(corridasOrdenadas);
       } else {
         console.error('Dados carregados não são um array:', corridasCarregadas);
         setCorridas([]);

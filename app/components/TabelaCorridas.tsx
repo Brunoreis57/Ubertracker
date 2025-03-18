@@ -64,9 +64,21 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
     }
 
     try {
+      console.log('Aplicando filtro de data:', filtroData);
+      console.log('Total de corridas antes do filtro:', corridas.length);
+
       const resultado = corridas.filter((corrida) => {
         try {
-          const dataCorrida = new Date(corrida.data);
+          // Normalizar a data da corrida
+          let dataCorrida: Date;
+          
+          if (corrida.data.includes('T')) {
+            // Se for formato ISO com hora (2023-01-01T00:00:00.000Z)
+            dataCorrida = new Date(corrida.data);
+          } else {
+            // Se for apenas data YYYY-MM-DD
+            dataCorrida = new Date(corrida.data + 'T12:00:00');
+          }
           
           // Se a data da corrida for inválida, não incluir nos resultados
           if (isNaN(dataCorrida.getTime())) {
@@ -74,18 +86,20 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
             return false;
           }
           
+          console.log(`Corrida ${corrida.id} - Data:`, corrida.data, 'Data processada:', dataCorrida.toISOString().split('T')[0]);
+          
           let incluir = true;
           
           if (filtroData.inicio) {
-            const dataInicio = new Date(filtroData.inicio);
-            dataInicio.setHours(0, 0, 0, 0);
+            const dataInicio = new Date(filtroData.inicio + 'T00:00:00');
             incluir = incluir && dataCorrida >= dataInicio;
+            console.log(`  - Comparando com início ${filtroData.inicio}:`, dataCorrida >= dataInicio);
           }
           
           if (filtroData.fim) {
-            const dataFim = new Date(filtroData.fim);
-            dataFim.setHours(23, 59, 59, 999);
+            const dataFim = new Date(filtroData.fim + 'T23:59:59');
             incluir = incluir && dataCorrida <= dataFim;
+            console.log(`  - Comparando com fim ${filtroData.fim}:`, dataCorrida <= dataFim);
           }
           
           return incluir;
@@ -95,6 +109,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
         }
       });
       
+      console.log('Total de corridas após filtro:', resultado.length);
       setCorridasFiltradas(resultado);
       setFiltroAplicado(true);
     } catch (erro) {
