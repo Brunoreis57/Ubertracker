@@ -98,7 +98,10 @@ const Navbar = ({ children }: NavbarProps) => {
   if (!isMounted) {
     return (
       <header className="h-16 bg-gray-900 text-white shadow-md sticky top-0 z-40 flex items-center justify-between px-4">
-        <div className="text-xl font-bold">BR UBER</div>
+        <div className="flex items-center">
+          <FaTaxi size={24} className="text-white mr-3" />
+          <div className="text-xl font-bold">BR UBER</div>
+        </div>
       </header>
     );
   }
@@ -115,7 +118,7 @@ const Navbar = ({ children }: NavbarProps) => {
           >
             {isSidebarOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
-          <FaTaxi size={24} className="text-white" />
+          <FaTaxi size={24} className="text-white mr-3" />
           <div className="text-xl font-bold">BR UBER</div>
         </div>
         <AuthStatus />
