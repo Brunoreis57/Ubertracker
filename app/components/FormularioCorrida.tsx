@@ -86,6 +86,8 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
 
   const onSubmit = (dados: Omit<Corrida, 'id' | 'gastoGasolina'>) => {
     try {
+      console.log('Dados do formulário recebidos:', dados);
+      
       // Garantir que a data seja válida
       const dataObj = new Date(dados.data);
       if (isNaN(dataObj.getTime())) {
@@ -105,13 +107,20 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
         ganhoBruto: Number(dados.ganhoBruto) || 0,
       };
 
+      // Criar objeto da corrida com ID único se for nova, ou manter ID existente
+      const id = corridaParaEditar?.id || gerarId();
+      console.log('ID da corrida:', id, 'É edição?', !!corridaParaEditar);
+      
       const novaCorrida: Corrida = {
-        id: corridaParaEditar?.id || gerarId(),
+        id: id,
         ...dadosConvertidos,
         gastoGasolina: gastoGasolinaCalculado,
         data: dataObj.toISOString(),
       };
 
+      console.log('Corrida processada antes de salvar:', novaCorrida);
+      
+      // Chamar a função de salvamento
       onSalvar(novaCorrida);
       
       if (!corridaParaEditar) {
@@ -134,7 +143,7 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
         setMensagem(null);
       }, 3000);
     } catch (erro) {
-      console.error('Erro ao salvar corrida:', erro);
+      console.error('Erro ao processar corrida:', erro);
       setMensagem({
         tipo: 'erro',
         texto: 'Erro ao salvar corrida. Tente novamente.',
@@ -144,14 +153,14 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6 text-primary-700">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">
         {corridaParaEditar ? 'Editar Corrida' : 'Adicionar Nova Corrida'}
       </h2>
 
       {mensagem && (
         <div
           className={`mb-4 p-3 rounded ${
-            mensagem.tipo === 'sucesso' ? 'bg-success-200 text-success-800 border border-success-300' : 'bg-danger-200 text-danger-800 border border-danger-300'
+            mensagem.tipo === 'sucesso' ? 'bg-green-100 text-green-800 border border-green-400' : 'bg-red-100 text-red-800 border border-red-400'
           }`}
         >
           {mensagem.texto}
@@ -159,10 +168,10 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
       )}
       
       {!configVeiculo && (
-        <div className="mb-4 p-3 rounded bg-warning-100 text-warning-800 border border-warning-300">
+        <div className="mb-4 p-3 rounded bg-yellow-100 text-yellow-800 border border-yellow-400">
           <p>
             Configurações do veículo não encontradas. O cálculo de gasto com gasolina pode estar incorreto.{' '}
-            <a href="/configuracoes" className="text-primary-600 underline">
+            <a href="/configuracoes" className="text-yellow-900 underline font-medium">
               Configurar veículo
             </a>
           </p>
@@ -171,20 +180,20 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="data" className="block text-sm font-medium text-gray-800 mb-1">
+          <label htmlFor="data" className="block text-sm font-medium text-gray-900 mb-1">
             Data
           </label>
           <input
             type="date"
             id="data"
             {...register('data', { required: 'Data é obrigatória' })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
           />
-          {errors.data && <p className="mt-1 text-sm text-danger-700 font-medium">{errors.data.message}</p>}
+          {errors.data && <p className="mt-1 text-sm text-gray-900 font-medium">{errors.data.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="horasTrabalhadas" className="block text-sm font-medium text-gray-800 mb-1">
+          <label htmlFor="horasTrabalhadas" className="block text-sm font-medium text-gray-900 mb-1">
             Horas Trabalhadas
           </label>
           <input
@@ -197,15 +206,15 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
               min: { value: 0, message: 'Valor deve ser maior ou igual a 0' },
               valueAsNumber: true,
             })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
           />
           {errors.horasTrabalhadas && (
-            <p className="mt-1 text-sm text-danger-700 font-medium">{errors.horasTrabalhadas.message}</p>
+            <p className="mt-1 text-sm text-gray-900 font-medium">{errors.horasTrabalhadas.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="kmRodados" className="block text-sm font-medium text-gray-800 mb-1">
+          <label htmlFor="kmRodados" className="block text-sm font-medium text-gray-900 mb-1">
             Quilômetros Rodados
           </label>
           <input
@@ -218,29 +227,29 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
               min: { value: 0, message: 'Valor deve ser maior ou igual a 0' },
               valueAsNumber: true,
             })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
           />
-          {errors.kmRodados && <p className="mt-1 text-sm text-danger-700 font-medium">{errors.kmRodados.message}</p>}
+          {errors.kmRodados && <p className="mt-1 text-sm text-gray-900 font-medium">{errors.kmRodados.message}</p>}
         </div>
         
         {/* Campo de gasto com gasolina calculado (somente leitura) */}
         <div>
-          <label className="block text-sm font-medium text-gray-800 mb-1">
+          <label className="block text-sm font-medium text-gray-900 mb-1">
             Gasto com Gasolina (Calculado)
           </label>
           <div className="flex items-center">
-            <div className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-gray-700 flex items-center">
-              <FaGasPump className="text-danger-600 mr-2" />
+            <div className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md text-black flex items-center">
+              <FaGasPump className="text-gray-900 mr-2" />
               {formatarDinheiro(gastoGasolinaCalculado)}
             </div>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-700">
             Calculado com base no consumo de {configVeiculo?.consumoMedio || '?'} km/l e preço de {configVeiculo ? formatarDinheiro(configVeiculo.precoGasolina) : '?'}/litro
           </p>
         </div>
 
         <div>
-          <label htmlFor="quantidadeViagens" className="block text-sm font-medium text-gray-800 mb-1">
+          <label htmlFor="quantidadeViagens" className="block text-sm font-medium text-gray-900 mb-1">
             Quantidade de Viagens
           </label>
           <input
@@ -252,15 +261,15 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
               min: { value: 0, message: 'Valor deve ser maior ou igual a 0' },
               valueAsNumber: true,
             })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
           />
           {errors.quantidadeViagens && (
-            <p className="mt-1 text-sm text-danger-700 font-medium">{errors.quantidadeViagens.message}</p>
+            <p className="mt-1 text-sm text-gray-900 font-medium">{errors.quantidadeViagens.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="ganhoBruto" className="block text-sm font-medium text-gray-800 mb-1">
+          <label htmlFor="ganhoBruto" className="block text-sm font-medium text-gray-900 mb-1">
             Ganho Bruto (R$)
           </label>
           <input
@@ -273,16 +282,16 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
               min: { value: 0, message: 'Valor deve ser maior ou igual a 0' },
               valueAsNumber: true,
             })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
           />
-          {errors.ganhoBruto && <p className="mt-1 text-sm text-danger-700 font-medium">{errors.ganhoBruto.message}</p>}
+          {errors.ganhoBruto && <p className="mt-1 text-sm text-gray-900 font-medium">{errors.ganhoBruto.message}</p>}
         </div>
 
         <div className="flex justify-center mt-8">
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-bold text-lg flex items-center shadow-lg ${
+            className={`px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 font-bold text-lg flex items-center shadow-lg ${
               isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >

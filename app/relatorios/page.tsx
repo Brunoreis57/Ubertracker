@@ -1,0 +1,274 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Corrida, VeiculoConfig, Periodo } from '../types';
+import { carregarDados, filtrarCorridasPorPeriodo, formatarDinheiro } from '../lib/utils';
+import { FaCarSide, FaRoute, FaMoneyBillWave, FaGasPump, FaList } from 'react-icons/fa';
+
+const RelatoriosPage = () => {
+  const [corridas, setCorridas] = useState<Corrida[]>([]);
+  const [configVeiculo, setConfigVeiculo] = useState<VeiculoConfig | null>(null);
+  const [periodoAtual, setPeriodoAtual] = useState<Periodo>('mensal');
+  const [carregando, setCarregando] = useState(true);
+  const [resumos, setResumos] = useState<{
+    [key in Periodo]: {
+      totalCorridas: number;
+      totalKm: number;
+      totalGanhos: number;
+      totalGastoGasolina: number;
+      mediaGanhosPorCorrida: number;
+      mediaKmPorCorrida: number;
+      mediaGastoGasolinaPorCorrida: number;
+      mediaGanhosHora: number;
+    }
+  } | null>(null);
+
+  useEffect(() => {
+    carregarDadosRelatorios();
+  }, []);
+
+  useEffect(() => {
+    if (corridas.length > 0) {
+      calcularResumos();
+    }
+  }, [corridas, periodoAtual]);
+
+  const carregarDadosRelatorios = async () => {
+    try {
+      setCarregando(true);
+      
+      // Carregar corridas do localStorage
+      const corridasCarregadas = carregarDados<Corrida[]>('corridas', []);
+      setCorridas(corridasCarregadas);
+      
+      // Carregar configurações do veículo
+      const configCarregada = carregarDados<VeiculoConfig | null>('veiculoConfig', null);
+      setConfigVeiculo(configCarregada);
+      
+      setCarregando(false);
+    } catch (erro) {
+      console.error('Erro ao carregar dados:', erro);
+      setCarregando(false);
+    }
+  };
+
+  const calcularResumos = () => {
+    const periodos: Periodo[] = ['diario', 'semanal', 'mensal', 'anual'];
+    const resumosCalculados = {} as {
+      [key in Periodo]: {
+        totalCorridas: number;
+        totalKm: number;
+        totalGanhos: number;
+        totalGastoGasolina: number;
+        mediaGanhosPorCorrida: number;
+        mediaKmPorCorrida: number;
+        mediaGastoGasolinaPorCorrida: number;
+        mediaGanhosHora: number;
+      }
+    };
+
+    periodos.forEach(periodo => {
+      const corridasFiltradas = filtrarCorridasPorPeriodo(corridas, periodo);
+      
+      const totalCorridas = corridasFiltradas.length;
+      const totalKm = corridasFiltradas.reduce((total, corrida) => total + corrida.kmRodados, 0);
+      const totalGanhos = corridasFiltradas.reduce((total, corrida) => total + corrida.ganhoBruto, 0);
+      const totalGastoGasolina = corridasFiltradas.reduce((total, corrida) => total + corrida.gastoGasolina, 0);
+      const totalHoras = corridasFiltradas.reduce((total, corrida) => total + corrida.horasTrabalhadas, 0);
+      
+      const mediaGanhosPorCorrida = totalCorridas > 0 ? totalGanhos / totalCorridas : 0;
+      const mediaKmPorCorrida = totalCorridas > 0 ? totalKm / totalCorridas : 0;
+      const mediaGastoGasolinaPorCorrida = totalCorridas > 0 ? totalGastoGasolina / totalCorridas : 0;
+      const mediaGanhosHora = totalHoras > 0 ? totalGanhos / totalHoras : 0;
+
+      resumosCalculados[periodo] = {
+        totalCorridas,
+        totalKm,
+        totalGanhos,
+        totalGastoGasolina,
+        mediaGanhosPorCorrida,
+        mediaKmPorCorrida,
+        mediaGastoGasolinaPorCorrida,
+        mediaGanhosHora
+      };
+    });
+
+    setResumos(resumosCalculados);
+  };
+
+  const renderizarCardIndicador = (
+    titulo: string, 
+    valor: string, 
+    icone: JSX.Element, 
+    descricao: string,
+    corFundo: string
+  ) => {
+    return (
+      <div className={`${corFundo} rounded-lg shadow-md p-4 flex flex-col`}>
+        <div className="flex items-center mb-2">
+          <div className="mr-3 text-gray-900">
+            {icone}
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">{titulo}</h3>
+        </div>
+        <div className="text-3xl font-bold text-gray-900 mb-2">{valor}</div>
+        <p className="text-sm text-gray-800">{descricao}</p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Relatórios e Análises</h1>
+
+      {carregando ? (
+        <div className="text-center py-8">
+          <p className="text-gray-900 text-lg">Carregando dados...</p>
+        </div>
+      ) : (
+        <>
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Selecione o Período</h2>
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setPeriodoAtual('diario')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    periodoAtual === 'diario'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                  }`}
+                >
+                  Diário
+                </button>
+                <button
+                  onClick={() => setPeriodoAtual('semanal')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    periodoAtual === 'semanal'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                  }`}
+                >
+                  Semanal
+                </button>
+                <button
+                  onClick={() => setPeriodoAtual('mensal')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    periodoAtual === 'mensal'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                  }`}
+                >
+                  Mensal
+                </button>
+                <button
+                  onClick={() => setPeriodoAtual('anual')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    periodoAtual === 'anual'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                  }`}
+                >
+                  Anual
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {resumos ? (
+            <>
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo {periodoAtual.charAt(0).toUpperCase() + periodoAtual.slice(1)}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  {renderizarCardIndicador(
+                    'Total de Corridas',
+                    resumos[periodoAtual].totalCorridas.toString(),
+                    <FaList size={24} />,
+                    'Número total de corridas realizadas',
+                    'bg-primary-50'
+                  )}
+                  {renderizarCardIndicador(
+                    'Quilômetros Rodados',
+                    `${resumos[periodoAtual].totalKm.toFixed(1)} km`,
+                    <FaRoute size={24} />,
+                    'Distância total percorrida',
+                    'bg-success-50'
+                  )}
+                  {renderizarCardIndicador(
+                    'Ganho Bruto',
+                    formatarDinheiro(resumos[periodoAtual].totalGanhos),
+                    <FaMoneyBillWave size={24} />,
+                    'Valor total ganho no período',
+                    'bg-warning-50'
+                  )}
+                  {renderizarCardIndicador(
+                    'Gasto com Gasolina',
+                    formatarDinheiro(resumos[periodoAtual].totalGastoGasolina),
+                    <FaGasPump size={24} />,
+                    'Valor total gasto com combustível',
+                    'bg-danger-50'
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Médias por Corrida</h2>
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">Ganho Médio</h3>
+                      <p className="text-2xl font-bold text-success-700">
+                        {formatarDinheiro(resumos[periodoAtual].mediaGanhosPorCorrida)}
+                      </p>
+                      <p className="text-sm text-gray-700">Por corrida</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">Distância Média</h3>
+                      <p className="text-2xl font-bold text-primary-700">
+                        {resumos[periodoAtual].mediaKmPorCorrida.toFixed(1)} km
+                      </p>
+                      <p className="text-sm text-gray-700">Por corrida</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">Gasto Médio</h3>
+                      <p className="text-2xl font-bold text-danger-700">
+                        {formatarDinheiro(resumos[periodoAtual].mediaGastoGasolinaPorCorrida)}
+                      </p>
+                      <p className="text-sm text-gray-700">Gasolina por corrida</p>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800 mb-2">Ganho por Hora</h3>
+                      <p className="text-2xl font-bold text-warning-700">
+                        {formatarDinheiro(resumos[periodoAtual].mediaGanhosHora)}
+                      </p>
+                      <p className="text-sm text-gray-700">Por hora trabalhada</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+              <p className="font-medium">Não há dados disponíveis para o período selecionado.</p>
+              <p>Adicione corridas para visualizar as estatísticas.</p>
+            </div>
+          )}
+
+          {!configVeiculo && (
+            <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+              <p className="font-medium">Configurações do veículo não encontradas.</p>
+              <p>
+                Algumas estatísticas podem não estar precisas. 
+                <a href="/configuracoes" className="underline ml-1">
+                  Configurar veículo
+                </a>
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default RelatoriosPage; 

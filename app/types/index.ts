@@ -19,6 +19,28 @@ export interface Corrida {
   ganhoBruto: number;
 }
 
+// Tipo para usuário
+export interface Usuario {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  senha: string; // Será armazenada com hash no localStorage
+  dataCadastro: string; // formato ISO
+  tokenResetSenha?: string;
+  expiracaoTokenResetSenha?: number; // timestamp
+}
+
+// Tipo para sessão de usuário (usuário logado)
+export interface SessaoUsuario {
+  id: string;
+  nome: string;
+  email: string;
+  logado: boolean;
+  dataLogin: number; // timestamp
+  dataExpiracao: number; // timestamp
+}
+
 // Tipo para período de visualização
 export type Periodo = 'diario' | 'semanal' | 'mensal' | 'anual';
 

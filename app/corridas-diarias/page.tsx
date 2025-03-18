@@ -5,61 +5,92 @@ import TabelaCorridas from '../components/TabelaCorridas';
 import FormularioCorrida from '../components/FormularioCorrida';
 import { Corrida } from '../types';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import { carregarDados, salvarDados } from '../lib/utils';
+import { verificarLogin } from '../lib/authUtils';
 
 const CorridasDiarias = () => {
   const [corridas, setCorridas] = useState<Corrida[]>([]);
   const [corridaParaEditar, setCorridaParaEditar] = useState<Corrida | null>(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
   useEffect(() => {
-    carregarDados();
+    carregarCorridasDoStorage();
   }, []);
 
-  const carregarDados = () => {
+  const carregarCorridasDoStorage = () => {
     try {
-      const dadosSalvos = localStorage.getItem('corridas');
-      if (dadosSalvos) {
-        const corridasCarregadas = JSON.parse(dadosSalvos);
-        
-        // Validar dados carregados
-        if (Array.isArray(corridasCarregadas)) {
-          setCorridas(corridasCarregadas);
-        } else {
-          console.error('Dados carregados não são um array:', corridasCarregadas);
-          setCorridas([]);
-          localStorage.setItem('corridas', JSON.stringify([]));
-        }
+      // Verificar se o usuário está logado
+      const { logado, sessao } = verificarLogin();
+      let chaveCorretas = 'corridas';
+      
+      if (logado && sessao) {
+        setUsuarioId(sessao.id);
+        chaveCorretas = `corridas_${sessao.id}`;
+        console.log(`Usuário logado: ${sessao.nome} (${sessao.id}). Usando chave: ${chaveCorretas}`);
+      } else {
+        console.log('Usuário não logado. Usando chave padrão: corridas');
+      }
+      
+      // Usar a função utilitária para carregar dados
+      const corridasCarregadas = carregarDados<Corrida[]>(chaveCorretas, []);
+      console.log(`Corridas carregadas (${chaveCorretas}):`, corridasCarregadas.length);
+      
+      // Validar dados carregados
+      if (Array.isArray(corridasCarregadas)) {
+        setCorridas(corridasCarregadas);
+      } else {
+        console.error('Dados carregados não são um array:', corridasCarregadas);
+        setCorridas([]);
+        // Se houver um usuário logado, salvar na chave específica dele
+        salvarDados(chaveCorretas, []);
       }
     } catch (erro) {
       console.error('Erro ao carregar dados:', erro);
       setCorridas([]);
-      // Resetar localStorage em caso de erro crítico
-      localStorage.setItem('corridas', JSON.stringify([]));
-      exibirMensagem('Erro ao carregar dados. Os dados foram resetados.', 'erro');
+      exibirMensagem('Erro ao carregar dados.', 'erro');
     }
   };
 
   const salvarCorrida = (novaCorrida: Corrida) => {
     try {
+      console.log('Salvando corrida:', novaCorrida);
+      
+      // Determinar a chave correta baseada no login
+      const chaveArmazenamento = usuarioId ? `corridas_${usuarioId}` : 'corridas';
+      console.log(`Usando chave de armazenamento: ${chaveArmazenamento}`);
+      
+      // Obter as corridas atualizadas diretamente do localStorage
+      const corridasAtuais = carregarDados<Corrida[]>(chaveArmazenamento, []);
       let novasCorridas: Corrida[];
       
       if (corridaParaEditar) {
         // Atualizar corrida existente
-        novasCorridas = corridas.map((corrida) =>
+        novasCorridas = corridasAtuais.map((corrida) =>
           corrida.id === corridaParaEditar.id ? novaCorrida : corrida
         );
         exibirMensagem('Corrida atualizada com sucesso!', 'sucesso');
       } else {
         // Adicionar nova corrida
-        novasCorridas = [...corridas, novaCorrida];
+        novasCorridas = [...corridasAtuais, novaCorrida];
         exibirMensagem('Corrida adicionada com sucesso!', 'sucesso');
       }
       
+      console.log('Lista atualizada de corridas:', novasCorridas.length);
+      
+      // Salvar no localStorage usando a função utilitária
+      salvarDados(chaveArmazenamento, novasCorridas);
+      
+      // Se o usuário estiver logado, também salvar uma cópia de segurança
+      if (usuarioId) {
+        salvarDados(`corridas_copia_seguranca_${usuarioId}`, novasCorridas);
+      }
+      
       setCorridas(novasCorridas);
-      localStorage.setItem('corridas', JSON.stringify(novasCorridas));
       setCorridaParaEditar(null);
       setMostrarFormulario(false);
+      
       // Rolar para o topo da tabela após adicionar/editar
       setTimeout(() => {
         const tabelaElement = document.getElementById('tabela-corridas');
@@ -74,6 +105,7 @@ const CorridasDiarias = () => {
   };
 
   const editarCorrida = (corrida: Corrida) => {
+    console.log('Editando corrida:', corrida);
     setCorridaParaEditar(corrida);
     setMostrarFormulario(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -81,9 +113,20 @@ const CorridasDiarias = () => {
 
   const excluirCorrida = (id: string) => {
     try {
-      const novasCorridas = corridas.filter((corrida) => corrida.id !== id);
+      console.log('Excluindo corrida com ID:', id);
+      
+      // Determinar a chave correta baseada no login
+      const chaveArmazenamento = usuarioId ? `corridas_${usuarioId}` : 'corridas';
+      
+      // Obter as corridas atualizadas diretamente do localStorage
+      const corridasAtuais = carregarDados<Corrida[]>(chaveArmazenamento, []);
+      const novasCorridas = corridasAtuais.filter((corrida) => corrida.id !== id);
+      
+      console.log('Lista de corridas após exclusão:', novasCorridas.length);
+      
+      // Salvar no localStorage usando a função utilitária
+      salvarDados(chaveArmazenamento, novasCorridas);
       setCorridas(novasCorridas);
-      localStorage.setItem('corridas', JSON.stringify(novasCorridas));
       exibirMensagem('Corrida excluída com sucesso!', 'sucesso');
     } catch (erro) {
       console.error('Erro ao excluir corrida:', erro);
@@ -108,14 +151,14 @@ const CorridasDiarias = () => {
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-primary-800 mb-4 md:mb-0">Corridas Diárias</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 md:mb-0">Corridas Diárias</h1>
         <button
           onClick={toggleFormulario}
           className={`flex items-center justify-center px-4 py-2 rounded-md ${
             mostrarFormulario 
-              ? 'bg-gray-500 hover:bg-gray-600' 
-              : 'bg-primary-600 hover:bg-primary-700'
-          } text-white transition-colors`}
+              ? 'bg-gray-600 hover:bg-gray-700' 
+              : 'bg-gray-900 hover:bg-gray-800'
+          } text-white transition-colors font-medium`}
         >
           {mostrarFormulario ? (
             <>
@@ -131,9 +174,7 @@ const CorridasDiarias = () => {
 
       {mensagem && (
         <div
-          className={`p-3 sm:p-4 mb-4 sm:mb-6 rounded-md ${
-            mensagem.tipo === 'sucesso' ? 'bg-success-100 border border-success-300 text-success-800' : 'bg-danger-100 border border-danger-300 text-danger-800'
-          }`}
+          className={`p-3 sm:p-4 mb-4 sm:mb-6 rounded-md bg-gray-200 border-2 border-gray-400 text-gray-900`}
         >
           {mensagem.texto}
         </div>

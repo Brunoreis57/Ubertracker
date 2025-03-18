@@ -63,24 +63,22 @@ const ConfiguracoesPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-primary-800 mb-8">Configurações</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Configurações</h1>
 
       {mensagem && (
         <div
-          className={`p-4 mb-6 rounded-md ${
-            mensagem.tipo === 'sucesso' ? 'bg-success-100 border border-success-300 text-success-800' : 'bg-danger-100 border border-danger-300 text-danger-800'
-          }`}
+          className={`p-4 mb-6 rounded-md bg-gray-200 border border-gray-400 text-gray-900`}
         >
           {mensagem.texto}
         </div>
       )}
 
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6 text-primary-700">Configurações do Veículo</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">Configurações do Veículo</h2>
 
         <div className="space-y-6">
           <div>
-            <label htmlFor="modelo" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="modelo" className="block text-sm font-medium text-gray-900 mb-1">
               Modelo do Veículo
             </label>
             <input
@@ -89,13 +87,13 @@ const ConfiguracoesPage = () => {
               name="modelo"
               value={config.modelo}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
               placeholder="Ex: Honda Civic"
             />
           </div>
 
           <div>
-            <label htmlFor="ano" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="ano" className="block text-sm font-medium text-gray-900 mb-1">
               Ano do Veículo
             </label>
             <input
@@ -106,12 +104,12 @@ const ConfiguracoesPage = () => {
               onChange={handleChange}
               min="1990"
               max={new Date().getFullYear() + 1}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
 
           <div>
-            <label htmlFor="consumoMedio" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="consumoMedio" className="block text-sm font-medium text-gray-900 mb-1">
               Consumo Médio (km/litro)
             </label>
             <input
@@ -122,15 +120,15 @@ const ConfiguracoesPage = () => {
               onChange={handleChange}
               min="1"
               step="0.1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700">
               Quantos quilômetros seu veículo percorre com 1 litro de combustível
             </p>
           </div>
 
           <div>
-            <label htmlFor="precoGasolina" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="precoGasolina" className="block text-sm font-medium text-gray-900 mb-1">
               Preço da Gasolina (R$/litro)
             </label>
             <input
@@ -141,12 +139,12 @@ const ConfiguracoesPage = () => {
               onChange={handleChange}
               min="0.01"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
 
           <div>
-            <label htmlFor="valorIPVA" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="valorIPVA" className="block text-sm font-medium text-gray-900 mb-1">
               Valor Anual do IPVA (R$)
             </label>
             <input
@@ -157,12 +155,12 @@ const ConfiguracoesPage = () => {
               onChange={handleChange}
               min="0"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
 
           <div>
-            <label htmlFor="gastoManutencao" className="block text-sm font-medium text-gray-800 mb-1">
+            <label htmlFor="gastoManutencao" className="block text-sm font-medium text-gray-900 mb-1">
               Gasto Anual com Manutenção (R$)
             </label>
             <input
@@ -173,14 +171,14 @@ const ConfiguracoesPage = () => {
               onChange={handleChange}
               min="0"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
 
           <div className="flex justify-center mt-8">
             <button
               onClick={salvarConfiguracoes}
-              className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 font-bold text-lg flex items-center shadow-lg"
+              className="px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 font-bold text-lg flex items-center shadow-lg"
             >
               <FaSave className="mr-2" /> Salvar Configurações
             </button>

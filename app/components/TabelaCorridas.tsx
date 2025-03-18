@@ -23,7 +23,16 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
 
   // Atualizar corridas filtradas quando as corridas originais mudarem
   useEffect(() => {
-    aplicarFiltro();
+    console.log('Corridas recebidas por TabelaCorridas:', corridas);
+    console.log('Total de corridas recebidas:', corridas.length);
+    
+    if (filtroAplicado && filtroData.inicio && filtroData.fim) {
+      console.log('Aplicando filtro às novas corridas recebidas');
+      aplicarFiltro();
+    } else {
+      console.log('Atualizando lista sem filtro');
+      setCorridasFiltradas(corridas);
+    }
   }, [corridas]);
 
   const confirmarExclusao = (id: string) => {
@@ -112,14 +121,14 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-primary-700">Corridas Registradas</h2>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">Corridas Registradas</h2>
 
-      <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">Filtrar por Período</h3>
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-3">Filtrar por Período</h3>
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
-            <label htmlFor="dataInicio" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dataInicio" className="block text-sm font-medium text-gray-900 mb-1">
               Data Inicial
             </label>
             <input
@@ -127,11 +136,11 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
               id="dataInicio"
               value={filtroData.inicio}
               onChange={(e) => setFiltroData({ ...filtroData, inicio: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="dataFim" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="dataFim" className="block text-sm font-medium text-gray-900 mb-1">
               Data Final
             </label>
             <input
@@ -139,20 +148,20 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
               id="dataFim"
               value={filtroData.fim}
               onChange={(e) => setFiltroData({ ...filtroData, fim: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 text-black"
             />
           </div>
-          <div className="flex-none flex items-end space-x-2 mt-2 sm:mt-0">
+          <div className="flex-none flex items-end space-x-2">
             <button
               onClick={aplicarFiltro}
-              className="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 flex items-center justify-center"
+              className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 flex items-center"
             >
               <FaFilter className="mr-2" /> Aplicar
             </button>
             {filtroAplicado && (
               <button
                 onClick={limparFiltros}
-                className="flex-1 sm:flex-none px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center"
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center"
               >
                 <FaTimes className="mr-2" /> Limpar
               </button>
@@ -163,11 +172,11 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
 
       {corridasFiltradas.length === 0 ? (
         <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-gray-600 mb-2">Nenhuma corrida encontrada.</p>
+          <p className="text-gray-700 font-medium mb-2">Nenhuma corrida encontrada.</p>
           {filtroAplicado ? (
-            <p className="text-gray-500">Tente ajustar os filtros ou <button onClick={limparFiltros} className="text-primary-600 underline">limpar os filtros</button>.</p>
+            <p className="text-gray-900">Tente ajustar os filtros ou <button onClick={limparFiltros} className="text-gray-900 underline font-medium">limpar os filtros</button>.</p>
           ) : (
-            <p className="text-gray-500">Adicione uma nova corrida na página "Adicionar Corrida".</p>
+            <p className="text-gray-900">Adicione uma nova corrida na página "Adicionar Corrida".</p>
           )}
         </div>
       ) : (
@@ -175,47 +184,47 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
           {/* Versão para desktop */}
           <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-800">
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Data
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Horas
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Km Rodados
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
-                    Gasto Gasolina <span className="text-xs font-normal normal-case">(calculado)</span>
+                    Gasto Gasolina <span className="text-xs font-normal normal-case text-gray-300">(calculado)</span>
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Viagens
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Ganho Bruto
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider"
                   >
                     Ações
                   </th>
@@ -239,7 +248,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex items-center">
-                        <FaGasPump className="text-danger-600 mr-2" />
+                        <FaGasPump className="text-gray-800 mr-2" />
                         {typeof corrida.gastoGasolina === 'number' 
                           ? formatarDinheiro(corrida.gastoGasolina) 
                           : formatarDinheiro(0)}
@@ -256,14 +265,14 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => onEditar(corrida)}
-                        className="text-primary-600 hover:text-primary-900 mr-3"
+                        className="text-gray-700 hover:text-black mr-3"
                         title="Editar"
                       >
                         <FaEdit size={18} />
                       </button>
                       <button
                         onClick={() => confirmarExclusao(corrida.id)}
-                        className="text-danger-600 hover:text-danger-900"
+                        className="text-gray-700 hover:text-black"
                         title="Excluir"
                       >
                         <FaTrash size={16} />
@@ -280,25 +289,25 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
             {corridasFiltradas.map((corrida) => (
               <div key={corrida.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
                 <div className="flex justify-between items-center mb-3">
-                  <div className="font-medium text-primary-700">{formatarDataSegura(corrida.data)}</div>
+                  <div className="font-medium text-gray-700">{formatarDataSegura(corrida.data)}</div>
                   <div className="flex space-x-2">
                     <button
                       onClick={() => abrirDetalhes(corrida)}
-                      className="text-primary-600 hover:text-primary-900"
+                      className="text-gray-700 hover:text-black"
                       title="Ver Detalhes"
                     >
                       <FaEye size={16} />
                     </button>
                     <button
                       onClick={() => onEditar(corrida)}
-                      className="text-primary-600 hover:text-primary-900"
+                      className="text-gray-700 hover:text-black"
                       title="Editar"
                     >
                       <FaEdit size={16} />
                     </button>
                     <button
                       onClick={() => confirmarExclusao(corrida.id)}
-                      className="text-danger-600 hover:text-danger-900"
+                      className="text-gray-700 hover:text-black"
                       title="Excluir"
                     >
                       <FaTrash size={16} />
@@ -320,7 +329,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
                   </div>
                   <div>
                     <span className="text-gray-500">Gasto:</span>{' '}
-                    <span className="font-medium text-danger-700 flex items-center">
+                    <span className="font-medium text-gray-700 flex items-center">
                       <FaGasPump className="mr-1" size={12} />
                       {typeof corrida.gastoGasolina === 'number' 
                         ? formatarDinheiro(corrida.gastoGasolina) 
@@ -344,10 +353,10 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
 
       {/* Modal de confirmação de exclusão */}
       {corridaParaExcluir && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-bold mb-3 sm:mb-4 text-gray-800">Confirmar Exclusão</h3>
-            <p className="mb-4 sm:mb-6 text-gray-600">Tem certeza que deseja excluir esta corrida? Esta ação não pode ser desfeita.</p>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-bold mb-4 text-gray-900">Confirmar Exclusão</h3>
+            <p className="mb-6 text-gray-700">Tem certeza que deseja excluir esta corrida? Esta ação não pode ser desfeita.</p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={cancelarExclusao}
@@ -357,7 +366,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
               </button>
               <button
                 onClick={executarExclusao}
-                className="px-3 sm:px-4 py-2 bg-danger-600 text-white rounded-md hover:bg-danger-700 focus:outline-none focus:ring-2 focus:ring-danger-500"
+                className="px-3 sm:px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700"
               >
                 Excluir
               </button>
@@ -368,10 +377,10 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
 
       {/* Modal de detalhes da corrida (para mobile) */}
       {corridaDetalhes && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg max-w-md w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-800">Detalhes da Corrida</h3>
+              <h3 className="text-lg font-bold text-primary-700">Detalhes da Corrida</h3>
               <button
                 onClick={fecharDetalhes}
                 className="text-gray-500 hover:text-gray-700"
@@ -402,7 +411,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
               </div>
               <div>
                 <span className="text-gray-500 block text-sm">Gasto com Gasolina (calculado):</span>
-                <span className="font-medium text-danger-700 flex items-center">
+                <span className="font-medium text-gray-700 flex items-center">
                   <FaGasPump className="mr-1" />
                   {typeof corridaDetalhes.gastoGasolina === 'number' 
                     ? formatarDinheiro(corridaDetalhes.gastoGasolina) 

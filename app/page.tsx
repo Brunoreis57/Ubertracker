@@ -7,6 +7,7 @@ import Grafico from './components/Grafico';
 import { Corrida, DadosGrafico, Periodo, ResumoFinanceiro, VeiculoConfig } from './types';
 import { calcularResumoFinanceiro, filtrarCorridasPorPeriodo, formatarDinheiro } from './lib/utils';
 import Link from 'next/link';
+import LembreteBackup from './components/LembreteBackup';
 
 export default function Home() {
   const [periodo, setPeriodo] = useState<Periodo>('mensal');
@@ -112,12 +113,12 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
-      <h1 className="text-2xl sm:text-3xl font-bold text-primary-800 mb-4 sm:mb-6">Dashboard</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Dashboard</h1>
 
       {!configVeiculo && (
-        <div className="mb-6 p-4 bg-warning-100 text-warning-800 border border-warning-300 rounded-md">
+        <div className="mb-6 p-4 bg-gray-200 text-gray-900 border border-gray-400 rounded-md">
           <div className="flex items-start">
-            <FaCog className="mt-1 mr-3 flex-shrink-0" />
+            <FaCog className="mt-1 mr-3 flex-shrink-0 text-gray-700" />
             <div>
               <p className="font-medium">Configurações do veículo não encontradas</p>
               <p className="mt-1">
@@ -125,7 +126,7 @@ export default function Home() {
               </p>
               <Link 
                 href="/configuracoes" 
-                className="mt-2 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 text-sm font-medium"
+                className="mt-2 inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 text-sm font-medium"
               >
                 <FaCog className="mr-2" /> Configurar Veículo
               </Link>
@@ -135,14 +136,14 @@ export default function Home() {
       )}
 
       <div className="mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2 sm:mb-3">Período de Análise</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Período de Análise</h2>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setPeriodo('diario')}
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium ${
               periodo === 'diario'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
             }`}
           >
             Hoje
@@ -151,8 +152,8 @@ export default function Home() {
             onClick={() => setPeriodo('semanal')}
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium ${
               periodo === 'semanal'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
             }`}
           >
             Última Semana
@@ -161,8 +162,8 @@ export default function Home() {
             onClick={() => setPeriodo('mensal')}
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium ${
               periodo === 'mensal'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
             }`}
           >
             Último Mês
@@ -171,8 +172,8 @@ export default function Home() {
             onClick={() => setPeriodo('anual')}
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium ${
               periodo === 'anual'
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
             }`}
           >
             Último Ano
@@ -185,42 +186,44 @@ export default function Home() {
           titulo="Ganho Bruto"
           valor={formatarDinheiro(resumo.ganhoBruto)}
           icone={<FaMoneyBillWave size={24} />}
-          corFundo="bg-white/70"
-          corTexto="text-gray-800"
+          corFundo=""
+          corTexto=""
         />
         <Card
           titulo="Ganho Líquido"
           valor={formatarDinheiro(resumo.ganhoLiquido)}
           icone={<FaWallet size={24} />}
-          corFundo="bg-white/70"
-          corTexto="text-gray-800"
+          corFundo=""
+          corTexto=""
         />
         <Card
           titulo="Gasto com Gasolina"
           valor={formatarDinheiro(resumo.gastoGasolina)}
           icone={<FaGasPump size={24} />}
-          corFundo="bg-white/70"
-          corTexto="text-gray-800"
+          corFundo=""
+          corTexto=""
         />
         <Card
           titulo="Outros Gastos"
           valor={formatarDinheiro(resumo.outrosGastos)}
           icone={<FaCalendarAlt size={24} />}
-          corFundo="bg-white/70"
-          corTexto="text-gray-800"
+          corFundo=""
+          corTexto=""
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Evolução de Ganhos</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Evolução de Ganhos</h2>
           <Grafico tipo="linha" dados={dadosGraficoGanhos} titulo="Ganhos no Último Mês" altura={300} />
         </div>
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4">Distribuição de Gastos</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Distribuição de Gastos</h2>
           <Grafico tipo="pizza" dados={dadosGraficoGastos} titulo="Gastos por Categoria" altura={300} />
         </div>
       </div>
+
+      <LembreteBackup />
     </div>
   );
 }
