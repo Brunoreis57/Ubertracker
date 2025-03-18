@@ -176,7 +176,7 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
           {filtroAplicado ? (
             <p className="text-gray-900">Tente ajustar os filtros ou <button onClick={limparFiltros} className="text-gray-900 underline font-medium">limpar os filtros</button>.</p>
           ) : (
-            <p className="text-gray-900">Adicione uma nova corrida na página "Adicionar Corrida".</p>
+            <p className="text-gray-900">Adicione uma nova corrida na página &quot;Adicionar Corrida&quot;.</p>
           )}
         </div>
       ) : (
