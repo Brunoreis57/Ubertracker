@@ -88,9 +88,10 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
     try {
       console.log('Dados do formulário recebidos:', dados);
       
-      // Garantir que a data seja válida
-      const dataObj = new Date(dados.data + 'T12:00:00'); // Adicionar hora para evitar problemas de fuso horário
-      if (isNaN(dataObj.getTime())) {
+      // Garantir que a data seja válida e preservar o dia correto
+      // Usar a data diretamente do input sem converter para objeto Date
+      // para evitar problemas de fuso horário
+      if (!dados.data) {
         setMensagem({
           tipo: 'erro',
           texto: 'Data inválida. Por favor, verifique o formato da data.',
@@ -111,15 +112,14 @@ const FormularioCorrida = ({ onSalvar, corridaParaEditar }: FormularioCorridaPro
       const id = corridaParaEditar?.id || gerarId();
       console.log('ID da corrida:', id, 'É edição?', !!corridaParaEditar);
       
-      // Formatação padronizada de data: YYYY-MM-DD
-      const dataFormatada = dataObj.toISOString().split('T')[0];
-      console.log('Data formatada para salvar:', dataFormatada);
+      // Usar a data exata do formulário (YYYY-MM-DD) sem manipulação
+      console.log('Data exata do formulário:', dados.data);
       
       const novaCorrida: Corrida = {
         id: id,
         ...dadosConvertidos,
         gastoGasolina: gastoGasolinaCalculado,
-        data: dataFormatada, // Usar formato YYYY-MM-DD sem hora e fuso
+        data: dados.data, // Usar a data exatamente como foi inserida no formulário
       };
 
       console.log('Corrida processada antes de salvar:', novaCorrida);

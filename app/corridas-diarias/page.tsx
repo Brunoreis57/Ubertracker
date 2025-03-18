@@ -56,10 +56,14 @@ const CorridasDiarias = () => {
       // Validar dados carregados
       if (Array.isArray(corridasCarregadas)) {
         // Ordenar corridas por data (mais recente primeiro)
+        // Como estamos usando formato YYYY-MM-DD, podemos ordenar diretamente as strings
         const corridasOrdenadas = [...corridasCarregadas].sort((a, b) => {
-          const dataA = new Date(a.data);
-          const dataB = new Date(b.data);
-          return dataB.getTime() - dataA.getTime();
+          // Extrair apenas a parte da data se estiver em formato ISO
+          const dataA = a.data.includes('T') ? a.data.split('T')[0] : a.data;
+          const dataB = b.data.includes('T') ? b.data.split('T')[0] : b.data;
+          
+          // Ordenar de forma decrescente (mais recente primeiro)
+          return dataB.localeCompare(dataA);
         });
         
         console.log('Corridas ordenadas por data (mais recente primeiro)');

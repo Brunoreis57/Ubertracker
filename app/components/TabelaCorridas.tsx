@@ -69,37 +69,26 @@ const TabelaCorridas = ({ corridas, onEditar, onExcluir }: TabelaCorridasProps) 
 
       const resultado = corridas.filter((corrida) => {
         try {
-          // Normalizar a data da corrida
-          let dataCorrida: Date;
+          // Para simplificar a comparação, vamos comparar apenas as strings YYYY-MM-DD
+          // Se corrida.data tem formato ISO completo, extrair apenas a parte da data
+          const dataCorridaStr = corrida.data.includes('T') 
+            ? corrida.data.split('T')[0] 
+            : corrida.data;
           
-          if (corrida.data.includes('T')) {
-            // Se for formato ISO com hora (2023-01-01T00:00:00.000Z)
-            dataCorrida = new Date(corrida.data);
-          } else {
-            // Se for apenas data YYYY-MM-DD
-            dataCorrida = new Date(corrida.data + 'T12:00:00');
-          }
-          
-          // Se a data da corrida for inválida, não incluir nos resultados
-          if (isNaN(dataCorrida.getTime())) {
-            console.error('Data inválida na corrida:', corrida);
-            return false;
-          }
-          
-          console.log(`Corrida ${corrida.id} - Data:`, corrida.data, 'Data processada:', dataCorrida.toISOString().split('T')[0]);
+          console.log(`Corrida ${corrida.id} - Data para comparação:`, dataCorridaStr);
           
           let incluir = true;
           
           if (filtroData.inicio) {
-            const dataInicio = new Date(filtroData.inicio + 'T00:00:00');
-            incluir = incluir && dataCorrida >= dataInicio;
-            console.log(`  - Comparando com início ${filtroData.inicio}:`, dataCorrida >= dataInicio);
+            // Comparação de strings no formato YYYY-MM-DD
+            incluir = incluir && dataCorridaStr >= filtroData.inicio;
+            console.log(`  - Comparando com início ${filtroData.inicio}:`, dataCorridaStr >= filtroData.inicio);
           }
           
           if (filtroData.fim) {
-            const dataFim = new Date(filtroData.fim + 'T23:59:59');
-            incluir = incluir && dataCorrida <= dataFim;
-            console.log(`  - Comparando com fim ${filtroData.fim}:`, dataCorrida <= dataFim);
+            // Comparação de strings no formato YYYY-MM-DD
+            incluir = incluir && dataCorridaStr <= filtroData.fim;
+            console.log(`  - Comparando com fim ${filtroData.fim}:`, dataCorridaStr <= filtroData.fim);
           }
           
           return incluir;
