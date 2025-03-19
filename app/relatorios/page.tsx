@@ -85,19 +85,22 @@ const RelatoriosPage = () => {
     periodos.forEach(periodo => {
       const corridasFiltradas = filtrarCorridasPorPeriodo(corridas, periodo);
       
-      const totalCorridas = corridasFiltradas.length;
+      const totalViagens = corridasFiltradas.reduce((total, corrida) => total + (corrida.quantidadeViagens || 0), 0);
       const totalKm = corridasFiltradas.reduce((total, corrida) => total + corrida.kmRodados, 0);
       const totalGanhos = corridasFiltradas.reduce((total, corrida) => total + corrida.ganhoBruto, 0);
       const totalGastoGasolina = corridasFiltradas.reduce((total, corrida) => total + corrida.gastoGasolina, 0);
       const totalHoras = corridasFiltradas.reduce((total, corrida) => total + corrida.horasTrabalhadas, 0);
       
-      const mediaGanhosPorCorrida = totalCorridas > 0 ? totalGanhos / totalCorridas : 0;
-      const mediaKmPorCorrida = totalCorridas > 0 ? totalKm / totalCorridas : 0;
-      const mediaGastoGasolinaPorCorrida = totalCorridas > 0 ? totalGastoGasolina / totalCorridas : 0;
+      const registrosCorridas = corridasFiltradas.length;
+      const mediaGanhosPorCorrida = registrosCorridas > 0 ? totalGanhos / registrosCorridas : 0;
+      const mediaKmPorCorrida = registrosCorridas > 0 ? totalKm / registrosCorridas : 0;
+      const mediaGastoGasolinaPorCorrida = registrosCorridas > 0 ? totalGastoGasolina / registrosCorridas : 0;
       const mediaGanhosHora = totalHoras > 0 ? totalGanhos / totalHoras : 0;
 
+      console.log(`Período ${periodo}: ${corridasFiltradas.length} registros, ${totalViagens} viagens totais`);
+
       resumosCalculados[periodo] = {
-        totalCorridas,
+        totalCorridas: totalViagens,
         totalKm,
         totalGanhos,
         totalGastoGasolina,
@@ -196,10 +199,10 @@ const RelatoriosPage = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo {periodoAtual.charAt(0).toUpperCase() + periodoAtual.slice(1)}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                   {renderizarCardIndicador(
-                    'Total de Corridas',
+                    'Total de Viagens',
                     resumos[periodoAtual].totalCorridas.toString(),
                     <FaList size={24} />,
-                    'Número total de corridas realizadas',
+                    'Número total de viagens realizadas',
                     'bg-gray-50'
                   )}
                   {renderizarCardIndicador(
