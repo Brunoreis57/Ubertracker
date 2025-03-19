@@ -72,12 +72,47 @@ export const filtrarCorridasPorPeriodo = (corridas: Corrida[], periodo: Periodo)
       dataInicio = subDays(hoje, 30); // Padrão: último mês
   }
 
+  console.log(`Filtrando corridas por período: ${periodo}, data início: ${dataInicio.toISOString()}, hoje: ${hoje.toISOString()}`);
+  console.log(`Total de corridas antes do filtro: ${corridas.length}`);
+
   return corridas.filter((corrida) => {
-    const dataCorrida = parseISO(corrida.data);
-    return isWithinInterval(dataCorrida, {
-      start: dataInicio,
-      end: endOfDay(hoje),
-    });
+    try {
+      // Lidar com diferentes formatos de data
+      let dataCorrida: Date;
+      
+      if (!corrida.data) {
+        console.error('Corrida sem data:', corrida);
+        return false;
+      }
+      
+      // Se for apenas YYYY-MM-DD sem a parte T
+      if (corrida.data.length === 10 && !corrida.data.includes('T')) {
+        dataCorrida = new Date(`${corrida.data}T12:00:00`); // Meio-dia para evitar problemas de fuso
+      } else {
+        // Tentar parseISO para formato ISO completo
+        dataCorrida = parseISO(corrida.data);
+      }
+      
+      // Verificar se a data é válida
+      if (isNaN(dataCorrida.getTime())) {
+        console.error('Data inválida na corrida:', corrida);
+        return false;
+      }
+      
+      const resultado = isWithinInterval(dataCorrida, {
+        start: dataInicio,
+        end: endOfDay(hoje),
+      });
+      
+      if (resultado) {
+        console.log(`Corrida ${corrida.id} com data ${corrida.data} está dentro do intervalo`);
+      }
+      
+      return resultado;
+    } catch (erro) {
+      console.error('Erro ao processar data da corrida:', erro, corrida);
+      return false;
+    }
   });
 };
 
