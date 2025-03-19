@@ -230,7 +230,7 @@ const RelatoriosPage = () => {
               </div>
 
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Médias por Corrida</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Médias Diárias</h2>
                 <div className="bg-white rounded-lg shadow-md p-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
@@ -238,21 +238,21 @@ const RelatoriosPage = () => {
                       <p className="text-2xl font-bold text-green-700">
                         {formatarDinheiro(resumos[periodoAtual].mediaGanhosPorCorrida)}
                       </p>
-                      <p className="text-sm text-gray-700">Por corrida</p>
+                      <p className="text-sm text-gray-700">Por dia</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Distância Média</h3>
                       <p className="text-2xl font-bold text-blue-700">
                         {resumos[periodoAtual].mediaKmPorCorrida.toFixed(1)} km
                       </p>
-                      <p className="text-sm text-gray-700">Por corrida</p>
+                      <p className="text-sm text-gray-700">Por dia</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Gasto Médio</h3>
                       <p className="text-2xl font-bold text-red-700">
                         {formatarDinheiro(resumos[periodoAtual].mediaGastoGasolinaPorCorrida)}
                       </p>
-                      <p className="text-sm text-gray-700">Gasolina por corrida</p>
+                      <p className="text-sm text-gray-700">Gasolina por dia</p>
                     </div>
                     <div>
                       <h3 className="text-lg font-medium text-gray-800 mb-2">Ganho por Hora</h3>
