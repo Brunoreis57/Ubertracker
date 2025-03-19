@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaCog, FaPlus, FaTable, FaBars, FaTimes, FaChartLine, FaDatabase, FaLifeRing, FaUser, FaTaxi } from 'react-icons/fa';
+import { FaHome, FaCog, FaPlus, FaTable, FaBars, FaTimes, FaChartLine, FaDatabase, FaLifeRing, FaUser, FaTaxi, FaCalculator } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import AuthStatus from './AuthStatus';
 import { verificarLogin } from '../lib/authUtils';
@@ -80,6 +80,7 @@ const Navbar = ({ children }: NavbarProps) => {
   const navItemsAutenticado = [
     { href: '/adicionar-corrida', label: 'Adicionar Corrida', icon: <FaPlus size={20} /> },
     { href: '/relatorios', label: 'Relatórios', icon: <FaChartLine size={20} /> },
+    { href: '/calculadora', label: 'Calculadora', icon: <FaCalculator size={20} /> },
     { href: '/backup', label: 'Backup e Restauração', icon: <FaDatabase size={20} /> },
     { href: '/recuperar-contas', label: 'Recuperar Corridas', icon: <FaLifeRing size={20} /> },
     { href: '/configuracoes', label: 'Configurações', icon: <FaCog size={20} /> },
