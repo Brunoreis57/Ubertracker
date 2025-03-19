@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FaGasPump, FaRoute, FaMoneyBillWave, FaCalculator, FaCalendarAlt, FaBolt, FaExchangeAlt } from 'react-icons/fa';
+import { FaGasPump, FaRoute, FaMoneyBillWave, FaCalculator, FaCalendarAlt, FaBolt, FaExchangeAlt, FaClock } from 'react-icons/fa';
 
 type TipoVeiculo = 'combustao' | 'eletrico';
 
@@ -14,6 +14,7 @@ const CalculadoraPage = () => {
   const [metaDiaria, setMetaDiaria] = useState<string>('');
   const [valorPorKm, setValorPorKm] = useState<string>('');
   const [diasTrabalhados, setDiasTrabalhados] = useState<string>('');
+  const [horasPorDia, setHorasPorDia] = useState<string>('8'); // Valor padrão de 8 horas
   const [resultados, setResultados] = useState<{
     combustao: {
       kmNecessarios: number;
@@ -28,6 +29,8 @@ const CalculadoraPage = () => {
       totalCorridasPeriodo: number;
       totalGanhoBrutoPeriodo: number;
       totalGanhoLiquidoPeriodo: number;
+      ganhoPorHora: number;
+      horasNecessarias: number;
     };
     eletrico: {
       kmNecessarios: number;
@@ -42,6 +45,8 @@ const CalculadoraPage = () => {
       totalCorridasPeriodo: number;
       totalGanhoBrutoPeriodo: number;
       totalGanhoLiquidoPeriodo: number;
+      ganhoPorHora: number;
+      horasNecessarias: number;
     };
   } | null>(null);
 
@@ -49,8 +54,9 @@ const CalculadoraPage = () => {
     const meta = parseFloat(metaDiaria);
     const valorKm = parseFloat(valorPorKm);
     const dias = parseFloat(diasTrabalhados);
+    const horas = parseFloat(horasPorDia);
 
-    if (isNaN(meta) || isNaN(valorKm) || isNaN(dias)) {
+    if (isNaN(meta) || isNaN(valorKm) || isNaN(dias) || isNaN(horas)) {
       return;
     }
 
@@ -58,6 +64,8 @@ const CalculadoraPage = () => {
     const kmNecessarios = meta / valorKm;
     const corridasNecessarias = Math.ceil(kmNecessarios / 10);
     const ganhoBruto = kmNecessarios * valorKm;
+    const horasNecessarias = (kmNecessarios / 30) * 1.2; // Estimativa: 30km/h média + 20% tempo parado
+    const ganhoPorHora = ganhoBruto / horasNecessarias;
 
     // Cálculos para combustão
     const precoGas = parseFloat(precoGasolina);
@@ -82,6 +90,7 @@ const CalculadoraPage = () => {
         const kWhNecessarios = kmNecessarios / kmkWh;
         const custoEnergia = kWhNecessarios * precoEnergiaValor;
         const ganhoLiquidoEletrico = ganhoBruto - custoEnergia;
+        const ganhoPorHoraEletrico = ganhoLiquidoEletrico / horasNecessarias;
 
         // Cálculos do período para elétrico
         const totalkWhPeriodo = kWhNecessarios * dias;
@@ -102,7 +111,9 @@ const CalculadoraPage = () => {
             totalCustoCombustivelPeriodo,
             totalCorridasPeriodo,
             totalGanhoBrutoPeriodo,
-            totalGanhoLiquidoPeriodo
+            totalGanhoLiquidoPeriodo,
+            ganhoPorHora: ganhoLiquido / horasNecessarias,
+            horasNecessarias
           },
           eletrico: {
             kmNecessarios,
@@ -116,7 +127,9 @@ const CalculadoraPage = () => {
             totalCustoEnergiaPeriodo,
             totalCorridasPeriodo,
             totalGanhoBrutoPeriodo: totalGanhoBrutoPeriodoEletrico,
-            totalGanhoLiquidoPeriodo: totalGanhoLiquidoPeriodoEletrico
+            totalGanhoLiquidoPeriodo: totalGanhoLiquidoPeriodoEletrico,
+            ganhoPorHora: ganhoPorHoraEletrico,
+            horasNecessarias
           }
         });
       }
@@ -128,6 +141,12 @@ const CalculadoraPage = () => {
       style: 'currency',
       currency: 'BRL'
     });
+  };
+
+  const formatarHoras = (horas: number) => {
+    const horasInteiras = Math.floor(horas);
+    const minutos = Math.round((horas - horasInteiras) * 60);
+    return `${horasInteiras}h${minutos > 0 ? ` ${minutos}min` : ''}`;
   };
 
   return (
@@ -314,6 +333,26 @@ const CalculadoraPage = () => {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Horas por Dia
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaClock className="text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  min="1"
+                  max="24"
+                  value={horasPorDia}
+                  onChange={(e) => setHorasPorDia(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                  placeholder="Ex: 8"
+                />
+              </div>
+            </div>
+
             <button
               onClick={calcularEstimativas}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
@@ -437,6 +476,33 @@ const CalculadoraPage = () => {
                       {' '}({resultados.eletrico.totalGanhoLiquidoPeriodo > resultados.combustao.totalGanhoLiquidoPeriodo ? 'Mais' : 'Menos'} com {resultados.eletrico.totalGanhoLiquidoPeriodo > resultados.combustao.totalGanhoLiquidoPeriodo ? 'elétrico' : 'combustão'})
                     </span>
                   </p>
+                </div>
+              </div>
+
+              {/* Nova seção de Tempo e Ganhos por Hora */}
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <FaClock className="inline-block mr-2" />
+                  Tempo e Ganhos por Hora
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-gray-700">
+                    Horas necessárias por dia: <span className="font-semibold">{formatarHoras(resultados[tipoVeiculo].horasNecessarias)}</span>
+                  </p>
+                  <p className="text-gray-700">
+                    Ganho líquido por hora: <span className="font-semibold text-green-600">{formatarDinheiro(resultados[tipoVeiculo].ganhoPorHora)}/h</span>
+                  </p>
+                  <p className="text-gray-700">
+                    Média de horas por corrida: <span className="font-semibold">{formatarHoras(resultados[tipoVeiculo].horasNecessarias / resultados[tipoVeiculo].corridasNecessarias)}</span>
+                  </p>
+                  <p className="text-gray-700">
+                    Valor médio por corrida: <span className="font-semibold text-green-600">{formatarDinheiro(resultados[tipoVeiculo].ganhoBruto / resultados[tipoVeiculo].corridasNecessarias)}</span>
+                  </p>
+                  {resultados[tipoVeiculo].horasNecessarias > parseFloat(horasPorDia) && (
+                    <p className="text-red-600 font-medium mt-2">
+                      ⚠️ Atenção: O tempo necessário ({formatarHoras(resultados[tipoVeiculo].horasNecessarias)}) é maior que as horas disponíveis por dia ({horasPorDia}h). Considere ajustar sua meta ou aumentar as horas trabalhadas.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
